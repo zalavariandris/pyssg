@@ -6,7 +6,12 @@ Home-page: https://github.com/zalavariandris/pyssg
 Author: András Zalavári
 Author-email: zalavariandris@gmail.com
 License: UNKNOWN
-Description: 
+Description: # Python Stati Site Generator
+        simples no config static site generator
+        
+        # devserver
+        cd path/to/my/portfolio
+        python -m pyssg.devserver
         
 Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3
