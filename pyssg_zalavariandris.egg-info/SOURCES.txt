@@ -1,0 +1,11 @@
+README.md
+setup.py
+pyssg/__init__.py
+pyssg/devprocess.py
+pyssg/devserver.py
+pyssg/flaskserver.py
+pyssg/staticsite.py
+pyssg_zalavariandris.egg-info/PKG-INFO
+pyssg_zalavariandris.egg-info/SOURCES.txt
+pyssg_zalavariandris.egg-info/dependency_links.txt
+pyssg_zalavariandris.egg-info/top_level.txt

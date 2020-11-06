@@ -1,0 +1,9 @@
+{% extends "base.j2" %}
+{% block content %}
+mindenkinek:
+<ul>
+	{% for asset in assets %}
+	<li><img src="{{ asset }}"></li>
+	{% endfor %}
+</ul>
+{% endblock %}
