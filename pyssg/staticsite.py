@@ -120,6 +120,7 @@ if __name__ == "__main__":
 	# build portfolio
 	root = Path("../examples/juditfischer")
 	import os
+	dic	= {}
 	for path in root.rglob("[!_]*"):
 		if path.is_dir():
 			path = path.relative_to(root)

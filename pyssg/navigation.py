@@ -7,22 +7,31 @@ def make_directory_tree(root, criteria=None):
             tree[path] = make_directory_tree(path, criteria)
     return tree
 
-
 def pprint_tree(node, file=None, _prefix="", _last=True):
-    print(_prefix, "└─ " if _last else "├─ ", node[0].name, sep="", file=file)
-    _prefix += "   " if _last else "│  "
+    # print(_prefix, "└─ " if _last else "├─ ", node[0].name, sep="", file=file)
+    print(_prefix, "`- " if _last else "+  ", node[0].stem, sep="", file=file)
+    _prefix += "   " if _last else "|  "
     child_count = len(node[1])
     for i, child in enumerate(node[1].items()):
         _last = i == (child_count - 1)
         pprint_tree(child, file, _prefix, _last)
-        
+
 
 if __name__ == "__main__":
     from pathlib import Path
-    root = Path(".")
+    root = Path("../examples/juditfischer")
     # root = root.relative_to(root)
     # create tree
-    tree = make_directory_tree(root, criteria=Path.is_dir)
+    def criteria(path):
+        if path.is_file() and path.stem != "index" and path.suffix in (".html", ".md", ".j2"):
+            return True
+        if not path.is_dir():
+            return False
+        if any(part.startswith("_") for part in path.relative_to(root).parts):
+            return False
+        return True
+
+    tree = make_directory_tree(root, criteria=criteria)
 
     # print tree
     pprint_tree( (Path.cwd(), tree) )
@@ -36,7 +45,7 @@ if __name__ == "__main__":
         autoescape=select_autoescape(['html', 'xml'])
     )
 
-   template = env.from_string("""
+    template = env.from_string("""
         <ul>
             {%- for path, value in tree.items() recursive %}
                 <li>
@@ -47,7 +56,6 @@ if __name__ == "__main__":
                 </li>
             {%- endfor %}
         </ul>""")
-    template = env.get_template("navigation.j2")
     html = template.render(tree=tree)
     Path(Path.cwd(), "navigation.html").write_text(html)
 
