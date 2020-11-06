@@ -39,13 +39,10 @@ if __name__ == "__main__":
 
     # create html
     import jinja2
-    from jinja2 import Environment, FileSystemLoader, select_autoescape
-    env = Environment(
-        loader=FileSystemLoader('templates'),
-        autoescape=select_autoescape(['html', 'xml'])
-    )
+    from jinja2 import Environment, FileSystemLoader, ChoiceLoader, DictLoader, select_autoescape
 
-    template = env.from_string("""
+    env = Environment(
+        loader=ChoiceLoader([FileSystemLoader('templates'),     DictLoader({'navigation':"""
         <ul>
             {%- for path, value in tree.items() recursive %}
                 <li>
@@ -55,7 +52,11 @@ if __name__ == "__main__":
                     {%- endif %}
                 </li>
             {%- endfor %}
-        </ul>""")
+        </ul>"""})]),
+        autoescape=select_autoescape(['html', 'xml'])
+    )
+
+    template = env.get_template("navigation")
     html = template.render(tree=tree)
     Path(Path.cwd(), "navigation.html").write_text(html)
 
