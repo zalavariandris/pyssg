@@ -3,6 +3,11 @@ import shutil
 from jinja2 import Template, Environment, ChoiceLoader, FileSystemLoader, DictLoader,  select_autoescape
 import mimetypes
 
+class Page:
+    def __init__(self, name, uri, children=[]):
+        self.name, self.uri = name, uri
+        self.children = children
+
 class StaticSite:
     def __init__(self, root):
         assert Path(root).exists(), "provided root path: '{}', does not exists!".format(root)
@@ -37,13 +42,15 @@ class StaticSite:
                 return False
             return True
 
+
+
         navigation_source = """
         <ul>
-            {%- for path, value in tree.items() recursive %}
+            {%- for page in tree recursive %}
                 <li>
-                    <a href="{{ path }}">{{ path.name }}</a>
-                    {%- if value -%}
-                        <ul>{{ loop(value.items()) }}</ul>
+                    <a href="{{ page.uri }}">{{ page.name }}</a>
+                    {%- if page.children -%}
+                        <ul>{{ loop(page.children) }}</ul>
                     {%- endif %}
                 </li>
             {%- endfor %}
@@ -54,7 +61,16 @@ class StaticSite:
             autoescape=select_autoescape(['html', 'xml']),
         )
 
-        self.tree =  make_directory_tree(self.root, criteria=criteria)
+        folder_tree = make_directory_tree(self.root, criteria=criteria)
+
+        def pathtree_to_pagetree(compact):
+            return [Page(name=path.stem, uri="/"+str(path.relative_to(self.root)), children=pathtree_to_pagetree(children)) for path, children in compact.items()]
+
+        self.tree = pathtree_to_pagetree(folder_tree)
+
+        for page in self.tree:
+            print(page.name, page.uri, len(page.children))
+
 
     def build(self, watch=True):
         # clean _site folder
